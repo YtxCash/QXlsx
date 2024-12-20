@@ -1,43 +1,25 @@
-// main.cpp
-// QXlsx // MIT License // https://github.com/j2doll/QXlsx
-//
-
-#include <iostream>
-
 #include <QCoreApplication>
-#include <QDebug>
 #include <QDir>
-#include <QVariant>
-#include <QtCore>
-#include <QtGlobal>
-using namespace std;
 
-// [0] include QXlsx headers
-#include "xlsxcellrange.h"
-#include "xlsxchart.h"
-#include "xlsxchartsheet.h"
 #include "xlsxdocument.h"
-#include "xlsxrichstring.h"
-#include "xlsxworkbook.h"
-using namespace QXlsx;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
 
     //--------------------------------------
     // [1]  Writing excel file(*.xlsx)
 
-    QXlsx::Document xlsxW;
+    xlsx::Document document_write {};
 
     int row = 1;
-    int col = 1; //
+    int col = 1;
 
-    // xlsxW.write("A1", "Hello Qt!"); // write "Hello Qt!" to cell(A,1). it's shared string.
-    QVariant writeValue = QString("Hello Qt!");
-    xlsxW.write(row, col, writeValue);
+    // write "Hello Qt!" to cell(A,1).
+    QVariant value { "Hello Qt!" };
+    document_write.write(row, col, value);
 
-    if (xlsxW.saveAs("Test.xlsx")) // save the document as 'Test.xlsx'
+    if (document_write.saveAs("Test.xlsx")) // save the document as 'Test.xlsx'
     {
         qDebug() << "[debug] success to write xlsx file";
     } else {
@@ -50,15 +32,13 @@ int main(int argc, char *argv[])
     //--------------------------------------
     // [2] Reading excel file(*.xlsx)
 
-    Document xlsxR("Test.xlsx");
-    if (xlsxR.load()) // load excel file
-    {
+    xlsx::Document document_read("Test.xlsx");
+    if (document_read.load()) {
         qDebug() << "[debug] success to load xlsx file.";
 
-        Cell *cell = xlsxR.cellAt(row, col); // get cell pointer.
+        auto cell { document_read.cellAt(row, col) };
         if (cell != NULL) {
-            QVariant var =
-                cell->readValue(); // read cell value (number(double), QDateTime, QString ...)
+            QVariant var = cell->readValue(); // read cell value (number(double), QDateTime, QString ...)
             qDebug() << "[debug] cell(1,1) is " << var; // Display value. It is 'Hello Qt!'.
         } else {
             qDebug() << "[debug][error] cell(1,1) is not set.";
